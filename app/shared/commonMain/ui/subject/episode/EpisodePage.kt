@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -59,6 +60,7 @@ import me.him188.ani.app.ui.external.placeholder.placeholder
 import me.him188.ani.app.ui.foundation.LocalSnackbar
 import me.him188.ani.app.ui.foundation.launchInBackground
 import me.him188.ani.app.ui.theme.slightlyWeaken
+import me.him188.ani.app.videoplayer.PlayerController
 import me.him188.ani.app.videoplayer.rememberPlayerController
 import moe.tlaster.precompose.flow.collectAsStateWithLifecycle
 
@@ -73,8 +75,10 @@ fun EpisodePage(
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp)
     ) {
+        val playerController = rememberPlayerController(viewModel.videoSource)
         EpisodePageContent(
             viewModel,
+            playerController,
             onClickGoBack = goBack,
             modifier
         )
@@ -82,8 +86,15 @@ fun EpisodePage(
 }
 
 @Composable
+fun FullscreenPlayerView(viewModel: EpisodeViewModel) {
+    LocalContext.current.changeOrientation()
+    Modifier.fillMaxSize()
+}
+
+@Composable
 fun EpisodePageContent(
     viewModel: EpisodeViewModel,
+    playerController: PlayerController,
     onClickGoBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -92,7 +103,7 @@ fun EpisodePageContent(
         val video by viewModel.videoSource.collectAsStateWithLifecycle(null)
         val videoSourceSelected by viewModel.videoSourceSelected.collectAsStateWithLifecycle(false)
         Box(Modifier.fillMaxWidth().background(Color.Black).statusBarsPadding()) {
-            EpisodeVideo(videoSourceSelected, video, rememberPlayerController(viewModel.videoSource), onClickGoBack)
+            EpisodeVideo(videoSourceSelected, video, playerController, onClickGoBack)
         }
 
 //        video?.let { vid ->

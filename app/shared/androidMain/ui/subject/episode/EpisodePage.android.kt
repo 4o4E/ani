@@ -12,7 +12,7 @@ internal actual fun PreviewEpisodePage() {
             EpisodeViewModel(
                 424663,
                 1277147
-            )
+            ),
         )
     }
 }
