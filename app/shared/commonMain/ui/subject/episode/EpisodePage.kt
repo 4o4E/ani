@@ -45,8 +45,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import me.him188.ani.app.platform.LocalContext
+import me.him188.ani.app.platform.changeOrientation
 import me.him188.ani.app.ui.external.placeholder.placeholder
 import me.him188.ani.app.ui.foundation.LocalSnackbar
 import me.him188.ani.app.ui.foundation.launchInBackground
@@ -87,7 +90,6 @@ fun EpisodePage(
 
 @Composable
 fun FullscreenPlayerView(viewModel: EpisodeViewModel) {
-    LocalContext.current.changeOrientation()
     Modifier.fillMaxSize()
 }
 
@@ -98,12 +100,20 @@ fun EpisodePageContent(
     onClickGoBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.navigationBarsPadding()) {
+    var isFullScreen by remember { mutableStateOf(false) }
+    Column(modifier.then(if (isFullScreen) Modifier else Modifier.navigationBarsPadding())) {
         // 视频
         val video by viewModel.videoSource.collectAsStateWithLifecycle(null)
         val videoSourceSelected by viewModel.videoSourceSelected.collectAsStateWithLifecycle(false)
         Box(Modifier.fillMaxWidth().background(Color.Black).statusBarsPadding()) {
-            EpisodeVideo(videoSourceSelected, video, playerController, onClickGoBack)
+            val context = LocalContext.current
+            EpisodeVideo(videoSourceSelected, video, playerController,
+                onClickGoBack,
+                onClickFullScreen = {
+                    isFullScreen = !isFullScreen
+                    context.changeOrientation(isFullScreen)
+                }
+            )
         }
 
 //        video?.let { vid ->
