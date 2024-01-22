@@ -48,8 +48,13 @@ actual fun Context.setRequestFullScreen(fullscreen: Boolean) {
             requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
             // hide bars
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//                window.attributes = window.attributes.apply {
+//                    layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+//                }
+//            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                window.insetsController?.hide(WindowInsets.Type.statusBars().or(WindowInsets.Type.navigationBars()))
+                window.insetsController?.hide(WindowInsets.Type.systemBars().or(WindowInsets.Type.displayCutout()))
                 window.insetsController?.systemBarsBehavior =
                     WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             } else {
@@ -73,7 +78,7 @@ actual fun Context.setRequestFullScreen(fullscreen: Boolean) {
 
             // show bars
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                window.insetsController?.show(WindowInsets.Type.statusBars().or(WindowInsets.Type.navigationBars()))
+                window.insetsController?.show(WindowInsets.Type.systemBars().or(WindowInsets.Type.displayCutout()))
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     window.insetsController?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_DEFAULT
                 }

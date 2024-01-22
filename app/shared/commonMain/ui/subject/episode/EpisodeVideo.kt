@@ -7,10 +7,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
@@ -23,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -87,7 +91,14 @@ internal fun EpisodeVideo(
                     }
                 )
         ) { // 16:9 box
-            VideoPlayerView(playerController, Modifier.matchParentSize())
+            VideoPlayerView(
+                playerController,
+                Modifier
+                    .then(if (isFullscreen) Modifier.offset(x = -with(LocalDensity.current) {
+                        WindowInsets.displayCutout.getTop(LocalDensity.current).toDp()
+                    } / 2) else Modifier)
+                    .matchParentSize()
+            )
 
             PlayerControllerOverlay(
                 topBar = {
@@ -97,7 +108,7 @@ internal fun EpisodeVideo(
                         },
                         Modifier.alpha(controllerAlpha)
                             .background(color = aniDarkColorTheme().background.copy(0.8f))
-                            .statusBarsPadding()
+                            .then(if (isFullscreen) Modifier else Modifier.statusBarsPadding())
                             .padding(top = 12.dp)
                             .height(24.dp),
                     )
@@ -143,6 +154,7 @@ internal fun EpisodeVideo(
                             .alpha(controllerAlpha)
                             .background(color = aniDarkColorTheme().background.looming())
                             .padding(vertical = 4.dp)
+                            .then(if (isFullscreen) Modifier.padding(end = 16.dp) else Modifier)
                             .fillMaxWidth()
                     )
                 },
